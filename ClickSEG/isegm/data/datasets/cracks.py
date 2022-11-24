@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import pickle
 import random
@@ -40,7 +39,7 @@ class CracksDataset(ISDataset):
 
     def get_sample(self, index) -> DSample:
         img = np.asarray(Image.open(self.img_files[index]))
-        mask = np.asarray(Image.open(self.mask_files[index]).convert('L')).astype(np.int32)
+        mask = np.asarray(Image.open(self.mask_files[index]).convert('L'))
         assert mask.ndim == 2
         
         mask[mask < 128] = 0
@@ -48,5 +47,5 @@ class CracksDataset(ISDataset):
         if self.use_morph:
             kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
             mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-        mask = mask[:,:,None]
+        mask = mask[:,:,None].astype(np.int32)
         return DSample(img, mask, objects_ids=[1], sample_id=index)
