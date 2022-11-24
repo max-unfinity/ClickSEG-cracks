@@ -1,3 +1,4 @@
+# changes: remove mmcv import as it it not used
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
@@ -5,7 +6,7 @@ from isegm.utils.serialization import serialize
 from .is_model import ISModel
 from .modeling.hrnet_ocr import HighResolutionNet
 from isegm.model.modifiers import LRMult
-from mmcv.cnn import ConvModule, DepthwiseSeparableConvModule
+# from mmcv.cnn import ConvModule, DepthwiseSeparableConvModule
 import torchvision.ops.roi_align as roi_align
 from isegm.model.ops import DistMaps
 

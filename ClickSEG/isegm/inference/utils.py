@@ -1,3 +1,5 @@
+# changes: added Cracks Dataset
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -5,6 +7,7 @@ import torch
 import numpy as np
 
 from isegm.data.datasets import GrabCutDataset, BerkeleyDataset, DavisDataset, SBDEvaluationDataset, PascalVocDataset, Davis585Dataset, COCOMValDataset
+from isegm.data.datasets.cracks import CracksDataset
 
 from isegm.utils.serialization import load_model
 
@@ -68,6 +71,8 @@ def get_dataset(dataset_name, cfg):
         dataset = Davis585Dataset(cfg.DAVIS585_PATH, init_mask_mode='stm')
     elif dataset_name == 'D585_ZERO':
         dataset = Davis585Dataset(cfg.DAVIS585_PATH, init_mask_mode='zero')
+    elif dataset_name == 'CRACKS':
+        dataset = CracksDataset(cfg.CRACKS_PATH, split='test')
     else:
         dataset = None
     return dataset

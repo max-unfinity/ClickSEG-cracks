@@ -1,3 +1,4 @@
+# changes: added Cracks Dataset
 from isegm.data.compose import ComposeDataset, ProportionalComposeDataset
 from .berkeley import BerkeleyDataset
 from .coco import CocoDataset
@@ -17,3 +18,4 @@ from .saliency import SaliencyDataset
 from .ytb_vos import YouTubeDataset
 from .hflicker import HFlickerDataset
 from .thinobject import ThinObjectDataset
+from .cracks import CracksDataset
