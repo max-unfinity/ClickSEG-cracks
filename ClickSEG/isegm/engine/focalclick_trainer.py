@@ -1,3 +1,4 @@
+# changes: added validate and evaluate
 import os
 import random
 import logging
@@ -114,7 +115,7 @@ class ISTrainer(object):
                 click_model.to(self.device)
                 click_model.eval()
 
-    def run(self, num_epochs, start_epoch=None, validation=True):
+    def run(self, num_epochs, start_epoch=None, validation=True, eval_script=True):
         if start_epoch is None:
             start_epoch = self.cfg.start_epoch
 
@@ -122,8 +123,11 @@ class ISTrainer(object):
         logger.info(f'Total Epochs: {num_epochs}')
         for epoch in range(start_epoch, num_epochs):
             self.training(epoch)
-            #if validation:
-            #    self.validation(epoch)
+            if validation:
+                self.validation(epoch)
+            if eval_script:
+                import subprocess
+                subprocess.run('python scripts/evaluate_model.py FocalClick --checkpoint={self.cfg.CHECKPOINTS_PATH+"last_checkpoint"} --infer-size={min(self.model_cfg.crop_size)} --datasets=Cracks --gpus=0 --n-clicks=15')
 
     def training(self, epoch):
         if self.sw is None and self.is_master:
