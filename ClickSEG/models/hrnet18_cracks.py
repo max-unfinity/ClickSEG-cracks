@@ -69,7 +69,7 @@ def train(model, cfg, model_cfg):
         points_sampler=points_sampler,
     )
 
-    valset = SBDDataset(
+    valset = CracksDataset(
         cfg.CRACKS_PATH,
         split='test',
         augmentator=val_augmentator,
