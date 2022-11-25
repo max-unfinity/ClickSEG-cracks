@@ -15,6 +15,7 @@ import torch
 class CracksDataset(ISDataset):
     def __init__(self, dataset_path, split='train', use_morph=True, **kwargs):
         super().__init__(**kwargs)
+        self.name = 'Cracks'
         self.split = split
         self.use_morph = use_morph
         dataset_path = Path(dataset_path)
