@@ -145,7 +145,7 @@ class ISTrainer(object):
         
         infer_size = min(self.model_cfg.crop_size)
         model = self.net.eval()
-        args = argparse.Namespace(checkpoint='', clicks_limit=None, config_path='./config.yml', cpu=False, datasets='Cracks', device='cuda:0', eval_mode='cvpr', exp_path='', focus_crop_r=1.4, gpus='0', infer_size=infer_size, iou_analysis=False, logs_path='experiments/evaluation_logs', min_n_clicks=1, mode=mode, model_dir='', model_name=None, n_clicks=20, print_ious=False, save_ious=False, target_crop_r=1.4, target_iou=0.9, thresh=0.49, vis=True, vis_path='./experiments/vis_val/')
+        args = argparse.Namespace(checkpoint='', clicks_limit=None, config_path='./config.yml', cpu=False, datasets='Cracks', device='cuda:0', eval_mode='cvpr', exp_path='', focus_crop_r=1.4, gpus='0', infer_size=infer_size, iou_analysis=False, logs_path='experiments/evaluation_logs', min_n_clicks=1, mode=mode, model_dir='', model_name=None, n_clicks=12, print_ious=False, save_ious=False, target_crop_r=1.4, target_iou=0.9, thresh=0.49, vis=True, vis_path='./experiments/vis_val/')
         args.logs_path = Path(self.cfg.EXPS_PATH) / 'evaluation_logs'
         args.logs_path.mkdir(parents=True, exist_ok=True)
         
