@@ -93,7 +93,7 @@ class ISTrainer(object):
                                                     output_device=cfg.gpu_ids[0])
 
         if self.is_master:
-            logger.info(model)
+#             logger.info(model)
             logger.info(get_config_repr(model._config))
 
         self.device = cfg.device
@@ -116,6 +116,11 @@ class ISTrainer(object):
                 click_model.eval()
 
     def run(self, num_epochs, start_epoch=None, validation=True, eval_script=True):
+#         print('starting with eval...')
+#         self.evals(mode='FocalClick')
+#         if validation:
+#             self.validation(epoch=0)
+                
         if start_epoch is None:
             start_epoch = self.cfg.start_epoch
 
@@ -126,9 +131,54 @@ class ISTrainer(object):
             if validation:
                 self.validation(epoch)
             if eval_script:
-                import subprocess
-                subprocess.run('python scripts/evaluate_model.py FocalClick --checkpoint={self.cfg.CHECKPOINTS_PATH+"last_checkpoint"} --infer-size={min(self.model_cfg.crop_size)} --datasets=Cracks --gpus=0 --n-clicks=15')
+                self.evals(mode='FocalClick')
 
+    def evals(self, mode='FocalClick', dataset_name='Cracks'):
+        import argparse
+        from scripts.evaluate_model import get_predictor_and_zoomin_params, save_iou_analysis_data, save_results
+        from isegm.inference.predictors import get_predictor
+        from isegm.inference.evaluation import evaluate_dataset
+        from isegm.inference import utils
+        from pathlib import Path
+        
+        dataset = utils.get_dataset(dataset_name, self.cfg)
+        
+        infer_size = min(self.model_cfg.crop_size)
+        model = self.net.eval()
+        args = argparse.Namespace(checkpoint='', clicks_limit=None, config_path='./config.yml', cpu=False, datasets='Cracks', device='cuda:0', eval_mode='cvpr', exp_path='', focus_crop_r=1.4, gpus='0', infer_size=infer_size, iou_analysis=False, logs_path='experiments/evaluation_logs', min_n_clicks=1, mode=mode, model_dir='', model_name=None, n_clicks=20, print_ious=False, save_ious=False, target_crop_r=1.4, target_iou=0.9, thresh=0.49, vis=True, vis_path='./experiments/vis_val/')
+        args.logs_path = Path(self.cfg.EXPS_PATH) / 'evaluation_logs'
+        args.logs_path.mkdir(parents=True, exist_ok=True)
+        
+        predictor_params, zoomin_params = get_predictor_and_zoomin_params(args, dataset_name)
+        predictor = get_predictor(model, args.mode, args.device,
+                                  infer_size=args.infer_size,
+                                  prob_thresh=args.thresh,
+                                  predictor_params=predictor_params,
+                                  focus_crop_r = args.focus_crop_r,
+                                  #zoom_in_params=None)
+                                  zoom_in_params=zoomin_params)
+
+        #vis_callback = get_prediction_vis_callback(logs_path, dataset_name, args.thresh) if args.vis else None
+        dataset_results = evaluate_dataset(dataset, predictor, pred_thr=args.thresh,
+                                           max_iou_thr=args.target_iou,
+                                           min_clicks=args.min_n_clicks,
+                                           max_clicks=args.n_clicks,
+                                           vis=args.vis,
+                                           )
+
+        row_name = args.mode
+        logs_prefix = ''
+        single_model_eval = True
+        if args.iou_analysis:
+            save_iou_analysis_data(args, dataset_name, args.logs_path,
+                                   logs_prefix, dataset_results,
+                                   model_name=args.model_name)
+
+        save_results(args, row_name, dataset_name, args.logs_path, logs_prefix, dataset_results,
+                     save_ious=single_model_eval and args.save_ious,
+                     single_model_eval=single_model_eval,
+                     print_header=True)
+        
     def training(self, epoch):
         if self.sw is None and self.is_master:
             self.sw = SummaryWriterAvg(log_dir=str(self.cfg.LOGS_PATH),
@@ -229,8 +279,7 @@ class ISTrainer(object):
         self.net.eval()
         for i, batch_data in enumerate(tbar):
             global_step = epoch * len(self.val_data) + i
-            loss, batch_losses_logging, splitted_batch_data, outputs = \
-                self.batch_forward(batch_data, validation=True)
+            loss, batch_losses_logging, splitted_batch_data, outputs, refine_output = self.batch_forward(batch_data, validation=True)
 
             batch_losses_logging['overall'] = loss
             reduce_loss_dict(batch_losses_logging)
@@ -248,10 +297,13 @@ class ISTrainer(object):
             for loss_name, loss_values in losses_logging.items():
                 self.sw.add_scalar(tag=f'{log_prefix}Losses/{loss_name}', value=np.array(loss_values).mean(),
                                    global_step=epoch, disable_avg=True)
+                print(f'{log_prefix}Losses/{loss_name}', np.array(loss_values).mean())
 
             for metric in self.val_metrics:
                 self.sw.add_scalar(tag=f'{log_prefix}Metrics/{metric.name}', value=metric.get_epoch_value(),
                                    global_step=epoch, disable_avg=True)
+                print(f'{log_prefix}Metrics/{metric.name}', metric.get_epoch_value())
+                
 
     def batch_forward(self, batch_data, validation=False):
         metrics = self.val_metrics if validation else self.train_metrics
