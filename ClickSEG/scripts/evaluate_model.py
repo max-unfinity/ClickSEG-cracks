@@ -215,7 +215,7 @@ def save_results(args, row_name, dataset_name, logs_path, logs_prefix, dataset_r
     #print(all_ious)
     mean_spc, mean_spi = utils.get_time_metrics(all_ious, elapsed_time)
 
-    iou_thrs = [args.target_iou, args.target_iou-0.05, args.target_iou+0.05]
+    iou_thrs = [args.target_iou-0.1, args.target_iou-0.05, args.target_iou]
     noc_list, over_max_list = utils.compute_noc_metric(all_ious, iou_thrs=iou_thrs, max_clicks=args.n_clicks)
 
     row_name = 'last' if row_name == 'last_checkpoint' else row_name
