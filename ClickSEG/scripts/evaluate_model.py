@@ -90,8 +90,8 @@ def parse_args():
 
     if (args.iou_analysis or args.print_ious) and args.min_n_clicks <= 1:
         args.target_iou = 1.01
-    else:
-        args.target_iou = max(0.8, args.target_iou)
+#     else:
+#         args.target_iou = max(0.8, args.target_iou)
 
     cfg = load_config_file(args.config_path, return_edict=True)
     cfg.EXPS_PATH = Path(cfg.EXPS_PATH)
@@ -215,14 +215,17 @@ def save_results(args, row_name, dataset_name, logs_path, logs_prefix, dataset_r
     #print(all_ious)
     mean_spc, mean_spi = utils.get_time_metrics(all_ious, elapsed_time)
 
-    iou_thrs = np.arange(0.8, min(0.95, args.target_iou) + 0.001, 0.05).tolist()
+    iou_thrs = [args.target_iou, args.target_iou-0.05, args.target_iou+0.05]
     noc_list, over_max_list = utils.compute_noc_metric(all_ious, iou_thrs=iou_thrs, max_clicks=args.n_clicks)
 
     row_name = 'last' if row_name == 'last_checkpoint' else row_name
     model_name = str(logs_path.relative_to(args.logs_path)) + ':' + logs_prefix if logs_prefix else logs_path.stem
-    header, table_row = utils.get_results_table(noc_list, over_max_list, row_name, dataset_name,
-                                                mean_spc, elapsed_time, args.n_clicks,
-                                                model_name=model_name)
+#     header, table_row = utils.get_results_table(noc_list, over_max_list, row_name, dataset_name,
+#                                                 mean_spc, elapsed_time, args.n_clicks,
+#                                                 model_name=model_name)
+    table_row = [f'NoC@{iou:.1%} = {noc:.2f}\n>={args.n_clicks}@{iou:.1%} = {over}' for iou,noc,over in zip(iou_thrs, noc_list, over_max_list)]
+    table_row = '\n'.join(table_row)
+    print(table_row)
 
     if args.print_ious:
         min_num_clicks = min(len(x) for x in all_ious)
@@ -230,17 +233,17 @@ def save_results(args, row_name, dataset_name, logs_path, logs_prefix, dataset_r
         miou_str = ' '.join([f'mIoU@{click_id}={mean_ious[click_id - 1]:.2%};'
                              for click_id in [1, 2, 3, 5, 10, 20] if click_id <= min_num_clicks])
         table_row += '; ' + miou_str
-    else:
-        target_iou_int = int(args.target_iou * 100)
-        if target_iou_int not in [80, 85, 90]:
-            noc_list, over_max_list = utils.compute_noc_metric(all_ious, iou_thrs=[args.target_iou],
-                                                               max_clicks=args.n_clicks)
-            table_row += f' NoC@{args.target_iou:.1%} = {noc_list[0]:.2f};'
-            table_row += f' >={args.n_clicks}@{args.target_iou:.1%} = {over_max_list[0]}'
+#     else:
+#         target_iou_int = int(args.target_iou * 100)
+#         if target_iou_int not in [80, 85, 90]:
+#         noc_list, over_max_list = utils.compute_noc_metric(all_ious, iou_thrs=iou_thrs,
+#                                                            max_clicks=args.n_clicks)
+#         table_row += f' NoC@{args.target_iou:.1%} = {noc_list[0]:.2f};'
+#         table_row += f' >={args.n_clicks}@{args.target_iou:.1%} = {over_max_list[0]}'
 
-    if print_header:
-        print(header)
-    print(table_row)
+#     if print_header:
+#         print(header)
+#     print(table_row)
 
     if save_ious:
         ious_path = logs_path / 'ious' / (logs_prefix if logs_prefix else '')
