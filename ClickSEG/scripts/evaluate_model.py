@@ -223,7 +223,7 @@ def save_results(args, row_name, dataset_name, logs_path, logs_prefix, dataset_r
 #     header, table_row = utils.get_results_table(noc_list, over_max_list, row_name, dataset_name,
 #                                                 mean_spc, elapsed_time, args.n_clicks,
 #                                                 model_name=model_name)
-    table_row = [f'NoC@{iou:.1%} = {noc:.2f}\n>={args.n_clicks}@{iou:.1%} = {over}' for iou,noc,over in zip(iou_thrs, noc_list, over_max_list)]
+    table_row = [f'NoC@{iou:.1%} = {noc:.2f}, >={args.n_clicks}@{iou:.1%} = {over}' for iou,noc,over in zip(iou_thrs, noc_list, over_max_list)]
     table_row = '\n'.join(table_row)
     print(table_row)
 
@@ -263,8 +263,8 @@ def save_results(args, row_name, dataset_name, logs_path, logs_prefix, dataset_r
             f.write(table_row + '\n')
     else:
         with open(log_path, 'w') as f:
-            if print_header:
-                f.write(header + '\n')
+#             if print_header:
+#                 f.write(header + '\n')
             f.write(table_row + '\n')
 
 
