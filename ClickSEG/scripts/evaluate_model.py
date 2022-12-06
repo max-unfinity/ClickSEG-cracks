@@ -212,7 +212,7 @@ def get_checkpoints_list_and_logs_path(args, cfg):
 def save_results(args, row_name, dataset_name, logs_path, logs_prefix, dataset_results,
                  save_ious=False, print_header=True, single_model_eval=False):
     all_ious, elapsed_time = dataset_results
-    #print(all_ious)
+    print(all_ious)
     mean_spc, mean_spi = utils.get_time_metrics(all_ious, elapsed_time)
 
     iou_thrs = [args.target_iou-0.1, args.target_iou-0.05, args.target_iou]
@@ -226,7 +226,8 @@ def save_results(args, row_name, dataset_name, logs_path, logs_prefix, dataset_r
     table_row = [f'NoC@{iou:.1%} = {noc:.2f}, >={args.n_clicks}@{iou:.1%} = {over}' for iou,noc,over in zip(iou_thrs, noc_list, over_max_list)]
     table_row = '\n'.join(table_row)
     print(table_row)
-
+    print('Avg. IoU@{args.n_clicks} clicks =', np.mean([x[-1] for x in all_ious]))
+    
     if args.print_ious:
         min_num_clicks = min(len(x) for x in all_ious)
         mean_ious = np.array([x[:min_num_clicks] for x in all_ious]).mean(axis=0)
