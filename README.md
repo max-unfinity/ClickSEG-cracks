@@ -13,6 +13,8 @@ Trained checkpoints: https://drive.google.com/drive/folders/1v7KxJenZzYii6Dh7Ad2
 
 ![](samples/34.png)
 
+### Crack-segmentation-dataset from kaggle: https://www.kaggle.com/datasets/lakshaymiddha/crack-segmentation-dataset
+
 ### Trained model info:
 - **Model**: HRNetV2-W18 S2
 - **Pretrained**: ImageNet
