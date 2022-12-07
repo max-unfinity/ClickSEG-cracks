@@ -13,7 +13,18 @@ Trained checkpoints: https://drive.google.com/drive/folders/1v7KxJenZzYii6Dh7Ad2
 
 ![](samples/34.png)
 
-### Crack-segmentation-dataset from kaggle: https://www.kaggle.com/datasets/lakshaymiddha/crack-segmentation-dataset
+### Dataset Info
+Crack-segmentation-dataset from kaggle: https://www.kaggle.com/datasets/lakshaymiddha/crack-segmentation-dataset
+
+This Dataset contains around 11.200 images that are merged from 12 available crack segmentation datasets.
+
+There are many inaccurate masks in ground truth. This adds noise to the data, reducing the IoU metrics significantly.
+
+**Inaccurate masks samples:**
+<p align="center">
+    <img src="samples/inaccurate_mask_0.png" width="400"\>
+    <img src="samples/inaccurate_mask_1.png" width="400"\>
+</p>
 
 ### Trained model info:
 - **Model**: HRNetV2-W18 S2
