@@ -13,7 +13,7 @@ import torch
  
 
 class CracksDataset(ISDataset):
-    def __init__(self, dataset_path, split='train', use_morph=True, **kwargs):
+    def __init__(self, dataset_path, split='train', n_test_samples=50, use_morph=True, **kwargs):
         super().__init__(**kwargs)
         self.name = 'Cracks'
         self.split = split
@@ -33,8 +33,12 @@ class CracksDataset(ISDataset):
             torch.save((self.img_files, self.mask_files), cache_path)
             
         if split == 'test':
-            print('trunc test to 50')
-            self.img_files, self.mask_files = self.img_files[:50], self.mask_files[:50]
+            n = len(self.img_files)
+            n_test_samples = min(n, n_test_samples)
+            print(f'trunc test to {n_test_samples}')
+            step = n//n_test_samples
+            self.img_files, self.mask_files = self.img_files[:step*n_test_samples:step], self.mask_files[:step*n_test_samples:step]
+        
         self.dataset_samples = self.img_files
         assert len(self.img_files) == len(self.mask_files)
 
