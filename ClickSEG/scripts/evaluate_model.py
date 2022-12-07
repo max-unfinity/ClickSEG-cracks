@@ -215,7 +215,7 @@ def save_results(args, row_name, dataset_name, logs_path, logs_prefix, dataset_r
 #     print(all_ious)
     mean_spc, mean_spi = utils.get_time_metrics(all_ious, elapsed_time)
 
-    iou_thrs = [args.target_iou-0.1, args.target_iou-0.05, args.target_iou]
+    iou_thrs = [args.target_iou-0.2, args.target_iou-0.15, args.target_iou-0.1, args.target_iou-0.05, args.target_iou]
     noc_list, over_max_list = utils.compute_noc_metric(all_ious, iou_thrs=iou_thrs, max_clicks=args.n_clicks)
 
     row_name = 'last' if row_name == 'last_checkpoint' else row_name
@@ -226,7 +226,7 @@ def save_results(args, row_name, dataset_name, logs_path, logs_prefix, dataset_r
     table_row = [f'NoC@{iou:.1%} = {noc:.2f}, >={args.n_clicks}@{iou:.1%} = {over}' for iou,noc,over in zip(iou_thrs, noc_list, over_max_list)]
     table_row = '\n'.join(table_row)
     print(table_row)
-    print(f'Avg. IoU@{args.n_clicks} clicks =', np.nanmean([x[-1] for x in all_ious]))
+    print('\n'.join([f'Avg. IoU@{n_clicks} clicks =', np.nanmean([x[min(n_clicks-1, len(x)-1)] for x in all_ious]) for n_clicks in [1,3,args.n_clicks]]))
     
     if args.print_ious:
         min_num_clicks = min(len(x) for x in all_ious)
