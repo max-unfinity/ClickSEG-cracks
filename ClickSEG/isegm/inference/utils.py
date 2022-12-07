@@ -86,11 +86,13 @@ def get_dataset(dataset_name, cfg):
 def get_iou(gt_mask, pred_mask, ignore_label=-1):
     ignore_gt_mask_inv = gt_mask != ignore_label
     obj_gt_mask = gt_mask == 1
-
-    intersection = np.logical_and(np.logical_and(pred_mask, obj_gt_mask), ignore_gt_mask_inv).sum()
-    union = np.logical_and(np.logical_or(pred_mask, obj_gt_mask), ignore_gt_mask_inv).sum()
-
-    return intersection / union
+    
+    if obj_gt_mask.sum() > 0:
+        intersection = np.logical_and(np.logical_and(pred_mask, obj_gt_mask), ignore_gt_mask_inv).sum()
+        union = np.logical_and(np.logical_or(pred_mask, obj_gt_mask), ignore_gt_mask_inv).sum()
+        return intersection / union
+    else:
+        return 1 - pred_mask.mean()
 
 
 def compute_noc_metric(all_ious, iou_thrs, max_clicks=20):
