@@ -1,9 +1,14 @@
 ## Training ClickSEG HRNet18 on custom Cracks Dataset
 
-Checkpoints: https://drive.google.com/drive/folders/1v7KxJenZzYii6Dh7Ad2ePKn4SinSS4Q7?usp=sharing
+Origingal repo: https://github.com/XavierCHEN34/ClickSEG
 
-Generally, for achieving a good predictions on cracks only 1-3 clicks is needed on avg., but the model often do the job in 1 click:
+---
 
+Generally, it takes only 1-3 clicks avg. to achieve good cracks predictions, but the model often do the job in 1 click.
+
+Trained checkpoints: https://drive.google.com/drive/folders/1v7KxJenZzYii6Dh7Ad2ePKn4SinSS4Q7?usp=sharing
+
+## Prediction Samples:
 ![](samples/fig.png)
 
 ![](samples/34.png)
