@@ -226,7 +226,7 @@ def save_results(args, row_name, dataset_name, logs_path, logs_prefix, dataset_r
     table_row = [f'NoC@{iou:.1%} = {noc:.2f}, >={args.n_clicks}@{iou:.1%} = {over}' for iou,noc,over in zip(iou_thrs, noc_list, over_max_list)]
     table_row = '\n'.join(table_row)
     print(table_row)
-    print('\n'.join([f'Avg. IoU@{n_clicks} clicks =', np.nanmean([x[min(n_clicks-1, len(x)-1)] for x in all_ious]) for n_clicks in [1,3,args.n_clicks]]))
+    print('\n'.join([f'Avg. IoU@{n_clicks} clicks = {np.nanmean([x[min(n_clicks-1, len(x)-1)] for x in all_ious]):.4f}' for n_clicks in [1,3]]))
     
     if args.print_ious:
         min_num_clicks = min(len(x) for x in all_ious)
