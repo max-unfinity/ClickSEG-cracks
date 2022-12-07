@@ -71,8 +71,13 @@ def get_dataset(dataset_name, cfg):
         dataset = Davis585Dataset(cfg.DAVIS585_PATH, init_mask_mode='stm')
     elif dataset_name == 'D585_ZERO':
         dataset = Davis585Dataset(cfg.DAVIS585_PATH, init_mask_mode='zero')
-    elif dataset_name == 'Cracks':
-        dataset = CracksDataset(cfg.CRACKS_PATH, split='test')
+    elif dataset_name.startswith('Cracks'):
+        # we can pass e.g. Cracks500 for taking only 500 (almost random) samples for test
+        if len(dataset_name) > len('Cracks'):
+            n_test = int(dataset_name[len('Cracks'):])
+        else:
+            n_test = 50
+        dataset = CracksDataset(cfg.CRACKS_PATH, split='test', n_test_samples=n_test)
     else:
         dataset = None
     return dataset
